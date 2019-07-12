@@ -128,12 +128,14 @@ func main() {
 		log.Printf("index %s", arg)
 		err := filepath.Walk(arg, func(path string, info os.FileInfo, err error) error {
 			if _, elem := filepath.Split(path); elem != "" {
+				if elem == ".git" {
+					return filepath.SkipDir
+				}
 				// Skip various temporary or "hidden" files or directories.
 				if elem[0] == '#' || elem[0] == '~' || elem[len(elem)-1] == '~' {
 					if info.IsDir() {
 						return filepath.SkipDir
 					}
-					return nil
 				}
 			}
 			if err != nil {
