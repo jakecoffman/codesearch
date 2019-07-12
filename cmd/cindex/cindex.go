@@ -126,10 +126,10 @@ func main() {
 	ix.AddPaths(args)
 	for _, arg := range args {
 		log.Printf("index %s", arg)
-		filepath.Walk(arg, func(path string, info os.FileInfo, err error) error {
+		err := filepath.Walk(arg, func(path string, info os.FileInfo, err error) error {
 			if _, elem := filepath.Split(path); elem != "" {
 				// Skip various temporary or "hidden" files or directories.
-				if elem[0] == '.' || elem[0] == '#' || elem[0] == '~' || elem[len(elem)-1] == '~' {
+				if elem[0] == '#' || elem[0] == '~' || elem[len(elem)-1] == '~' {
 					if info.IsDir() {
 						return filepath.SkipDir
 					}
@@ -145,6 +145,9 @@ func main() {
 			}
 			return nil
 		})
+		if err != nil {
+			log.Fatal("error during index walk", err)
+		}
 	}
 	log.Printf("flush index")
 	ix.Flush()
